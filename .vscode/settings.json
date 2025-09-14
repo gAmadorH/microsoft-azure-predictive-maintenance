@@ -1,0 +1,19 @@
+{
+  "files.autoSave": "onFocusChange",
+  "files.associations": {
+    "*.tfvars": "terraform",
+    "*.tfstate.backup": "terraform"
+  },
+  "editor.rulers": [
+    100
+  ],
+  "cSpell.enabled": true,
+  "cSpell.words": [
+    "hashicorp",
+    "tfvars",
+    "mlflow"
+  ],
+  "[terraform]": {
+    "editor.formatOnSave": true
+  }
+}

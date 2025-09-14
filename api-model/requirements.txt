@@ -1,0 +1,5 @@
+fastapi
+mlflow==3.3.2
+cloudpickle==3.1.0
+numpy==1.26.4
+tensorflow==2.17.0
