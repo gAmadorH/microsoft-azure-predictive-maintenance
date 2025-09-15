@@ -1,10 +1,27 @@
+# MLOps infra project on AWS and Terraform
+
+## Setup
+
+Clone repo
+
+```bash
+git clone https://github.com/gAmadorH/microsoft-azure-predictive-maintenance.git
+```
+
+Navigate to infra folder
+
+```bash
 cd infra
+```
 
-# Inicializa
+Init Terraform
+
+```bash
 terraform init
+```
 
-# Revisa el plan (si usas un tfvars dedicado)
-terraform plan -var-file=terraform.tfvars
+Deploy infrastructure
 
-# Aplica
-terraform apply -var-file=terraform.tfvars
+```bash
+terraform plan
+``` 
