@@ -1,5 +1,5 @@
 services:
-  api:
+  inference-api:
     build:
       context: .
       dockerfile: Dockerfile

@@ -8,17 +8,17 @@
   - MLFLOW_TRACKING_USERNAME
   - MLFLOW_TRACKING_PASSWORD
   - MLFLOW_MODEL_URI
--  Minicube or any local kubernetes cluster (optional, just to run api in kubernetes locally)
+- Minicube or any local kubernetes cluster (optional but recommended, just to run the inference API in kubernetes locally)
 
 ## Local Deployment with Docker Compose
 
 Clone github repo
 
 ```bash
-git clone
+git clone https://github.com/gAmadorH/microsoft-azure-predictive-maintenance.git
 ```
 
-Change directory
+Change directory to this folder:
 
 ```bash
 cd microsoft-azure-predictive-maintenance/api-model
@@ -31,16 +31,28 @@ or just copy the example env file with my default values to connect to my MLFlow
 cp .env.example .env
 ```
 
-Run API using docker compose
+Build your Docker image
 
 ```bash
-docker compose up
+docker compose build --no-cache
+ ```
+
+Run the inference API using docker compose
+
+```bash
+docker compose up -d
 ```
 
-Open another terminal and test the API suing the data in `api-model/testing-data` folder
+Test health endpoint
 
 ```bash
-curl -X POST http://0.0.0.0:8000/predict -H "Content-Type: application/json" -d @api-model/testing-data/dataset01.json
+curl http://0.0.0.0:8000/health 
+```
+
+Now test the predict API endpoint using the data in `testing-data` folder
+
+```bash
+curl -X POST http://0.0.0.0:8000/predict -H "Content-Type: application/json" -d @testing-data/dataset01.json
 ```
 
 You should get a response like this:
@@ -51,26 +63,69 @@ You should get a response like this:
 }
 ```
 
-Thant's it! You have your predictive model API running locally using Docker Compose.
+That's it! You have your predictive model API running locally using Docker Compose.
+
+If you want to see the API logs in real-time, run:
+
+```bash
+docker compose logs inference-api -f
+```
+
+```bash
+inference-api-1  | INFO:     Started server process [1]
+inference-api-1  | INFO:     Waiting for application startup.
+inference-api-1  | INFO:     Application startup complete.
+inference-api-1  | INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+inference-api-1  | INFO:     192.168.65.1:41546 - "GET /health HTTP/1.1" 200 OK
+inference-api-1  | INFO:     192.168.65.1:52856 - "GET /health HTTP/1.1" 200 OK
+1/1 ━━━━━━━━━━━━━━━━━━━━ 0s 49ms/step
+inference-api-1  | INFO:     192.168.65.1:63771 - "POST /predict HTTP/1.1" 200 OK
+inference-api-1  | INFO:     Shutting down
+inference-api-1  | INFO:     Waiting for application shutdown.
+inference-api-1  | INFO:     Application shutdown complete.
+inference-api-1  | INFO:     Finished server process [1]
+inference-api-1  | INFO:     Started server process [1]
+inference-api-1  | INFO:     Waiting for application startup.
+inference-api-1  | INFO:     Application startup complete.
+inference-api-1  | INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+1/1 ━━━━━━━━━━━━━━━━━━━━ 0s 54ms/step
+inference-api-1  | INFO:     192.168.65.1:59949 - "POST /predict HTTP/1.1" 200 OK
+1/1 ━━━━━━━━━━━━━━━━━━━━ 0s 23ms/step
+inference-api-1  | INFO:     192.168.65.1:34149 - "POST /predict HTTP/1.1" 200 OK
+1/1 ━━━━━━━━━━━━━━━━━━━━ 0s 38ms/step
+inference-api-1  | INFO:     192.168.65.1:48616 - "POST /predict HTTP/1.1" 200 OK
+```
+
+To stop the docker compose services, run:
+
+```bash
+docker compose down
+```
 
 ## Local Deployment with Kubernetes
 
-Change your current directory
+Build your Docker image in the same `api-model` folder
 
 ```bash
-cd kubernetes/api-model
+docker build -t mlflow-fastapi:v1 .
 ```
 
-Build your Docker image
+check your image was created
 
 ```bash
-docker build -t mlflow-fastapi .
+docker images | grep mlflow-fastapi
 ```
 
 Set your context to your local kubernetes cluster
 
 ```bash
-kubectl config use-context minikube
+kubectl config use-context docker-desktop
+```
+
+Verify your context
+
+```bash
+kubectl config current-context
 ```
 
 Create the kubernetes secrets using the `.env` file to connect to your MLFlow instance
@@ -80,16 +135,32 @@ kubectl create secret generic mlflow-tracking --from-env-file=.env -n default
 
 ```
 
-And then just apply the kubernetes manifests
+Verify the secrets were created
 
 ```bash
-kubectl apply -f kubernetes/main.yml
+kubectl describe secret mlflow-tracking
 ```
 
-Open another terminal and test the API suing the data in `api-model/testing-data` folder
+Change your current directory to `kubernetes` folder in the root folder
 
 ```bash
-curl -X POST http://0.0.0.0:8000/predict -H "Content-Type: application/json" -d @api-model/testing-data/dataset01.json
+cd ../kubernetes/api-model/
+```
+
+And then just apply the kubernetes manifests for:
+
+- deployment
+- service
+
+```bash
+kubectl apply -f deployment.yml 
+kubectl apply -f service.yml
+```
+
+Test the API suing the data in `api-model/testing-data` folder
+
+```bash
+curl -X POST http://0.0.0.0:8000/predict -H "Content-Type: application/json" -d @../../api-model/testing-data/dataset01.json
 ```
 
 You should get a response like this:
@@ -139,4 +210,16 @@ INFO:     10.1.0.1:60628 - "GET /health HTTP/1.1" 200 OK
 INFO:     10.1.0.1:57954 - "GET /health HTTP/1.1" 200 OK
 INFO:     10.1.0.1:57962 - "GET /health HTTP/1.1" 200 OK
 INFO:     10.1.0.1:57432 - "GET /health HTTP/1.1" 200 OK
+```
+
+To delete the deployment and service, run:
+
+```bash
+kubectl delete -f deployment.yml 
+kubectl delete -f service.yml```
+
+And remove the secrets
+
+```bash
+kubectl delete secret mlflow-tracking -n default
 ```
