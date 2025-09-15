@@ -5,6 +5,9 @@
 - Docker
 - AWS CLI configured with access to your AWS account
 - EKS Kubernetes cluster, ECR repository
+- External Secrets installed and configured in your EKS cluster
+- AWS secrets created in AWS Secrets Manager or AWS Systems Manager Parameter Store for:
+  - MLflow tracking server credentials
 
 Check the FastAPI app Dockerfile in the `api-model` folder before continuing.
 Preferably before continuing to run the model locally, using Docker and also Kubernetes locally
