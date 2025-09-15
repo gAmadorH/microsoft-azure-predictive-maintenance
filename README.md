@@ -21,4 +21,4 @@ This project analyzes equipment sensor data to predict the remaining useful life
 - `kubernetes` folder: Explore the Kubernetes setup and preparation for deploying the services.
 - `kubernetes/mlflow` folder: Focus on the MLflow deployment specifics to have a working tracking server and the model registry.
 - `api-model` folder: Check out the FastAPI application code for model serving and pull our trained model and test it locally using Docker Compose and Kubernetes locally
-- `kubernetes/api-model` folder: Finally, look at the Kubernetes manifests for deploying the FastAPI service.
+- `kubernetes/api-model` folder: Finally, look at the Kubernetes manifests for deploying the FastAPI service, and check and test the deployment demonstration.
