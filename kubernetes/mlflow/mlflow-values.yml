@@ -1,0 +1,48 @@
+service:
+  type: LoadBalancer
+  port: 80
+
+auth:
+  enabled: true
+  existingAdminSecret:
+    name: mlflow-tracking
+    usernameKey: MLFLOW_TRACKING_USERNAME
+    passwordKey: MLFLOW_TRACKING_PASSWORD
+
+backendStore:
+  databaseMigration: true
+  postgres:
+    enabled: true
+    host: "eks-postgres-db.czgq846mem3n.us-east-1.rds.amazonaws.com"
+    port: 5432
+    database: "mlflow"
+
+  existingDatabaseSecret:
+    name: "postgres-db-credentials"
+    usernameKey: "username"
+    passwordKey: "password"
+
+artifactRoot:
+  proxiedArtifactStorage: true
+  s3:
+    enabled: true
+    bucket: "eks-cluster-bucket-a075d761"
+    path: "mlflow-artifacts"
+    existingSecret:
+      name: "aws-credentials"
+      keyOfAccessKeyId: "access_key_id"
+      keyOfSecretAccessKey: "secret_access_key"
+
+telemetry:
+  enabled: true
+
+extraEnvVars:
+  AWS_DEFAULT_REGION: us-east-1
+  AWS_REGION: us-east-1
+  MLFLOW_S3_ENDPOINT_URL: https://s3.amazonaws.com
+
+extraFlags:
+  - serveArtifacts # => --serve-artifacts
+
+extraArgs:
+  artifactsDestination: s3://eks-cluster-bucket-a075d761/mlflow-artifacts
