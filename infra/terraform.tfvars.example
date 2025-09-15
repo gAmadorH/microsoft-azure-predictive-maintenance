@@ -1,0 +1,47 @@
+# Copia como terraform.tfvars (o dev.tfvars) y completa lo necesario
+
+aws_region  = "us-east-1"
+aws_profile = "default"
+
+tags = {
+  Project = "eks-mlflow"
+  Owner   = "tu-nombre"
+}
+
+# VPC
+vpc_cidr = "10.0.0.0/16"
+az_count = 2
+
+# EKS
+cluster_name     = "eks-cluster"
+cluster_version  = "1.30"
+node_instance_types = ["t3.large"]
+node_desired_size   = 2
+node_min_size       = 1
+node_max_size       = 3
+
+# RDS
+db_identifier          = "eks-postgres-db"
+db_instance_class      = "db.t3.micro"
+db_allocated_storage   = 20
+db_name                = "mlflow"
+db_username            = "eksdbuser"
+# db_password         = "coloca-una-si-quieres-evitar-random"
+
+# S3
+s3_bucket_name = "eks-cluster-bucket-<unico>"
+
+# ECR
+ecr_repo_name  = "mlflow-fastapi"
+
+# MLflow secret (opcional)
+create_mlflow_tracking_secret = true
+mlflow_tracking_uri           = "http://example-elb.us-east-1.elb.amazonaws.com"
+mlflow_tracking_username      = "admin"
+mlflow_tracking_password      = "cambia-esto"
+mlflow_model_uri              = "models:/RULPrediction1000/1"
+
+# AWS credentials secret (opcional, deshabilitado)
+create_aws_credentials_secret   = false
+# aws_access_key_id_for_secret   = ""
+# aws_secret_access_key_for_secret = ""
