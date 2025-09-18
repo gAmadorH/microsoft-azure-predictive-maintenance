@@ -35,6 +35,12 @@ and compute the remaining time until that failure for every record in this way, 
 | AWS Secrets Manager | Manages sensitive information such as: <br> - Database credentials <br> - MLFlow Web UI authentication credentials <br> - AWS credentials. |
 | ECR Repository | Stores Docker images for the application components. |
 
+## Kubernetes and AWS Secrets Manager Integration
+
+The application components running in the EKS cluster retrieve sensitive information from AWS Secrets Manager using IAM roles and policies. Each component is assigned an IAM role with permissions to access specific secrets, ensuring secure and controlled access to sensitive data.
+
+[![Kubernetes and AWS Secrets Manager Integration](./images/External-secrets-k8s.png)](./images/External-secrets-k8s.png)
+
 ## APIs
 
 ### health check endpoint
